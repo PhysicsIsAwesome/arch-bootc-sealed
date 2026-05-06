@@ -34,6 +34,6 @@ FROM quay.io/coreos/chunkah AS chunkah
 ARG CHUNKAH_CONFIG_STR
 RUN --mount=from=systemdboot,src=/,target=/chunkah,ro \
     --mount=type=bind,target=/run/src,rw \
-        chunkah build --label ostree.bootable=1 label=containers.bootc=1 --compressed --max-layers 248 > /run/src/out.ociarchive
+        chunkah build --label ostree.bootable=1 --label=containers.bootc=1 --compressed --max-layers 248 > /run/src/out.ociarchive
 
 FROM oci-archive:out.ociarchive
