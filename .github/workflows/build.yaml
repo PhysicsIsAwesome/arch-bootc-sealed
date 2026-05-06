@@ -7,7 +7,7 @@ env:
   IMAGE_DESC: "Experimental sealed version of a Arch bootc image"
   IMAGE_KEYWORDS: "bootc,archlinux,arch,sealed,uki"
   IMAGE_NAME: "${{ github.event.repository.name }}"
-  IMAGE_BASE: "ghcr.io/bootcrew/arch-bootc:latest"
+  IMAGE_BASE: ghcr.io/bootcrew/arch-bootc:latest
   DEFAULT_TAG: "latest"
 
 jobs:
