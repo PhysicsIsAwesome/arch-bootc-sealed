@@ -80,6 +80,8 @@ jobs:
           extra-args: |
             --secret=id=secureboot_key,env=DB_KEY
             --secret=id=secureboot_cert,env=DB_CRT
+            -v ${{ github.workspace }}:/run/src
+            --skip-unused-stages=false
         env:
           DB_KEY: ${{ secrets.DB_KEY }}
           DB_CRT: ${{ secrets.DB_CRT }}
