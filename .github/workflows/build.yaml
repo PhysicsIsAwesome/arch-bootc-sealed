@@ -67,7 +67,7 @@ jobs:
           sep-annotations: " "
 
       - name: Build unsealed image
-        id: build_image
+        id: build_image_unsealed
         uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2
         with:
           containerfiles: |
