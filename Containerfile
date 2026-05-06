@@ -13,17 +13,15 @@ RUN --network=none \
     --mount=type=secret,id=secureboot_cert \
     --mount=type=tmpfs,dst=/tmp \
     --mount=type=tmpfs,dst=/var/tmp \
-    <<EOF
-    set -xeuo pipefail
-    dracut --force "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E ".img" | tail -n 1)/initramfs.img"
-    sdboot="usr/lib/systemd/boot/efi/systemd-bootx64.efi"
-    sbsign \
+    sh -euxo pipefail -c '\
+        dracut --force "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E ".img" | tail -n 1)/initramfs.img"; \
+        sdboot="usr/lib/systemd/boot/efi/systemd-bootx64.efi"; \
+        sbsign \
             --key /run/secrets/secureboot_key \
             --cert /run/secrets/secureboot_cert \
-            --output /${sdboot} \
-            /${sdboot}
-    rm -vf /var/lib/systemd/random-seed
-EOF
+            --output "/${sdboot}" \
+            "/${sdboot}"; \
+        rm -vf /var/lib/systemd/random-seed'
 
 RUN rm -rf /boot /var/cache /tmp /var/tmp && \
     mkdir -p /boot /var/cache /tmp /var/tmp
