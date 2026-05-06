@@ -8,7 +8,6 @@ env:
   IMAGE_DESC: "Experimental sealed version of a Arch bootc image"
   IMAGE_KEYWORDS: "bootc,archlinux,arch,sealed,uki"
   IMAGE_NAME: "${{ github.event.repository.name }}"
-  IMAGE_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
   IMAGE_BASE: "ghcr.io/bootcrew/arch-bootc:latest"
   DEFAULT_TAG: "latest"
 
@@ -24,6 +23,11 @@ jobs:
       fail-fast: false
     runs-on: 'ubuntu-24.04'
     steps:
+      - name: lowercase repo owner
+        run: |
+          echo "REPO_OWNER_LOWERCASE=${GITHUB_REPOSITORY_OWNER,,}" >> ${GITHUB_ENV}
+          echo "IMAGE_REGISTRY=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" >> ${GITHUB_ENV}
+  
       - name: Mount BTRFS loopback for container storage
         uses: ublue-os/container-storage-action@dc1f4c8f17b672069e921f001132f7cf98a423a6
         continue-on-error: true
@@ -48,14 +52,14 @@ jobs:
             type=sha,enable=${{ github.event_name == 'pull_request' }}
             type=ref,event=pr
           labels: |
-            io.artifacthub.package.readme-url=https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}/${{ github.sha }}/README.md
+            io.artifacthub.package.readme-url=https://raw.githubusercontent.com/${{ REPO_OWNER_LOWERCASE }}/${{ env.IMAGE_NAME }}/${{ github.sha }}/README.md
             org.opencontainers.image.created=${{ steps.date.outputs.date }}
             org.opencontainers.image.description=${{ env.IMAGE_DESC }}
-            org.opencontainers.image.documentation=https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}/${{ github.sha }}/README.md
-            org.opencontainers.image.source=https://github.com/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}/blob/${{ github.sha }}/Containerfile
+            org.opencontainers.image.documentation=https://raw.githubusercontent.com/${{ REPO_OWNER_LOWERCASE }}/${{ env.IMAGE_NAME }}/${{ github.sha }}/README.md
+            org.opencontainers.image.source=https://github.com/${{ REPO_OWNER_LOWERCASE }}/${{ env.IMAGE_NAME }}/blob/${{ github.sha }}/Containerfile
             org.opencontainers.image.title=${{ env.IMAGE_NAME }}
-            org.opencontainers.image.url=https://github.com/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}/tree/${{ github.sha }}
-            org.opencontainers.image.vendor=${{ github.repository_owner }}
+            org.opencontainers.image.url=https://github.com/${{ REPO_OWNER_LOWERCASE }}/${{ env.IMAGE_NAME }}/tree/${{ github.sha }}
+            org.opencontainers.image.vendor=${{ REPO_OWNER_LOWERCASE }}
             org.opencontainers.image.version=${{ env.DEFAULT_TAG }}.{{date 'YYYYMMDD'}}
             io.artifacthub.package.deprecated=false
             io.artifacthub.package.keywords=${{ env.IMAGE_KEYWORDS }}
