@@ -1,0 +1,72 @@
+ARG base=ghcr.io/bootcrew/arch-bootc:latest
+ARG bootc=ghcr.io/bootcrew/arch-bootc:latest
+FROM $base as base
+
+FROM $bootc as signer
+RUN --mount=type=tmpfs,dst=/tmp --mount=type=tmpfs,dst=/usr/lib/sysimage/cache/pacman pacman -Sy sbsigntools systemd-ukify --needed --noconfirm
+
+FROM signer as kernel
+RUN --mount=type=bind,from=base,target=/target \
+    --network=none \
+    --mount=type=secret,id=secureboot_key \
+    --mount=type=secret,id=secureboot_cert \
+    --mount=type=tmpfs,dst=/tmp \
+    --mount=type=tmpfs,dst=/var/tmp \
+    <<EOF
+    set -xeuo pipefail
+    kver=$(basename $(find /target/usr/lib/modules -maxdepth 1 -mindepth 1 -type d -print0))
+    cmdline='"lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1 audit_backlog_limit=8192 rw rootflags=subvol=@"'
+    mkdir /out
+    ukify_args="\
+                --secureboot-private-key /run/secrets/secureboot_key \
+                --secureboot-certificate /run/secrets/secureboot_cert \
+                --output /boot/${kver}.efi"
+    bootc container ukify --rootfs /target --karg "rw rootflags=subvol=@" -- ${ukify_args}
+EOF
+
+FROM base
+COPY --from=kernel /boot/*.efi /boot/EFI/Linux/
+
+# FROM base as final
+# RUN --network=none --mount=type=bind,from=kernel,target=/run/kernel <<EOF
+# set -xeuo pipefail
+# kver=$(cd /usr/lib/modules && echo *)
+# mkdir -p /boot/EFI/Linux
+# # We put the UKI in /boot for now due to composefs verity not being the
+# # same due to mtime of /usr/lib/modules being changed
+# target="/boot/EFI/Linux/${kver}.efi"
+# cp "/run/kernel/boot/${kver}.efi" $target
+# # And remove the defaults
+# rm -v /usr/lib/modules/${kver}/{vmlinuz,initramfs.img}
+# # Symlink into the /usr/lib/modules location
+# ln -sr $target /usr/lib/modules/${kver}/$(basename $kver.efi)
+# bootc container lint
+# EOF
+
+# FROM base as final-final
+# COPY --from=final /boot /boot
+# Override the default
+# RUN <<EOF
+# set -xeuo pipefail
+# PATH1="/usr/lib/"
+# PATH2="/boot"
+
+# # Ensure sbverify is available
+# if ! command -v sbverify >/dev/null 2>&1; then
+#     echo "Error: sbverify not found. Install sbsigntools."
+#     exit 1
+# fi
+
+# find "$PATH1" "$PATH2" -type f -name "*.efi" 2>/dev/null | while read -r efi; do
+#     echo "=================================================="
+#     echo "File: $efi"
+
+#     if sbverify --list "$efi" >/dev/null 2>&1; then
+#         sbverify --list "$efi"
+#     else
+#         echo "No Secure Boot signature found (or not a PE/COFF binary)"
+#     fi
+# done
+# EOF
+
+LABEL containers.bootc=sealed

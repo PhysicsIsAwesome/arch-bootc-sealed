@@ -1,0 +1,6 @@
+secureboot-keys
+*.key
+*.cer
+*.cert
+*.esl
+Justfile
