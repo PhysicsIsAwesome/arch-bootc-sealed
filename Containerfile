@@ -28,10 +28,7 @@ RUN rm -rf /boot /var/cache /tmp /var/tmp && \
 
 RUN bootc container lint
 
-ARG CHUNKAH_CONFIG_STR
-
 FROM quay.io/coreos/chunkah AS chunkah
-ARG CHUNKAH_CONFIG_STR
 RUN --mount=from=systemdboot,src=/,target=/chunkah,ro \
     --mount=type=bind,target=/run/src,rw \
         chunkah build --label ostree.bootable=1 --label containers.bootc=1 --compressed --max-layers 248 > /run/src/out.ociarchive

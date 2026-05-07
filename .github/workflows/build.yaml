@@ -82,8 +82,6 @@ jobs:
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
           oci: true
-          build-args: |
-            CHUNKAH_CONFIG_STR=""
           extra-args: |
             --secret=id=secureboot_key,env=DB_KEY
             --secret=id=secureboot_cert,env=DB_CRT
