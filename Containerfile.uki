@@ -26,5 +26,4 @@ EOF
 
 FROM base
 COPY --from=kernel /boot/*.efi /boot/EFI/Linux/
-
 LABEL containers.bootc=sealed
