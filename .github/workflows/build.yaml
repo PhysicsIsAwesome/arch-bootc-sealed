@@ -134,11 +134,11 @@ jobs:
 
       - name: Sign the images with GitHub OIDC Token
         env:
-          DIGEST: ${{ steps.push.outputs.remote_image_digest }}
+          DIGEST: ${{ steps.push.outputs.digest }}
           TAGS: ${{ steps.metadata.outputs.tags }}
         run: |
           images=""
           for tag in ${TAGS}; do
-            images+="${tag}@${DIGEST} "
+            images+="${tag}@${DIGEST}"
           done
           cosign sign --yes ${images}
