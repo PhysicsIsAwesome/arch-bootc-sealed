@@ -137,8 +137,4 @@ jobs:
           DIGEST: ${{ steps.push.outputs.digest }}
           TAGS: ${{ steps.metadata.outputs.tags }}
         run: |
-          images=""
-          for tag in ${TAGS}; do
-            images+="${tag}@${DIGEST} "
-          done
-          cosign sign --yes ${images}
+          cosign sign --yes ${{ env.IMAGE_REGISTRY }}/${{ env.REPO_OWNER_LOWERCASE }}/${{ env.IMAGE_NAME }}@{DIGEST}
