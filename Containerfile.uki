@@ -17,4 +17,3 @@ RUN --mount=type=bind,from=base,target=/target \
 
 FROM base
 COPY --from=kernel /boot/*.efi /boot/EFI/Linux/
-LABEL containers.bootc=sealed
