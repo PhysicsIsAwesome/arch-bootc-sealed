@@ -6,23 +6,14 @@ FROM $bootc as signer
 RUN --mount=type=tmpfs,dst=/tmp --mount=type=tmpfs,dst=/usr/lib/sysimage/cache/pacman pacman -Sy sbsigntools systemd-ukify --needed --noconfirm
 
 FROM signer as kernel
+COPY scripts/uki-build.sh /uki-build.sh
 RUN --mount=type=bind,from=base,target=/target \
     --network=none \
     --mount=type=secret,id=secureboot_key \
     --mount=type=secret,id=secureboot_cert \
     --mount=type=tmpfs,dst=/tmp \
-    --mount=type=tmpfs,dst=/var/tmp <<EOF2
-#!/usr/bin/bash
-set -euo pipefail
-kver=$(basename $(find /target/usr/lib/modules -maxdepth 1 -mindepth 1 -type d -print0))
-cmdline='"lsm=landlock,lockdown,yama,integrity,apparmor,bpf audit=1 audit_backlog_limit=8192 rw rootflags=subvol=@"'
-mkdir /out
-ukify_args="\
-            --secureboot-private-key /run/secrets/secureboot_key \
-            --secureboot-certificate /run/secrets/secureboot_cert \
-            --output /boot/${kver}.efi"
-bootc container ukify --rootfs /target --karg "rw rootflags=subvol=@" -- ${ukify_args}
-EOF2
+    --mount=type=tmpfs,dst=/var/tmp \
+    sh /uki-build.sh
 
 FROM base
 COPY --from=kernel /boot/*.efi /boot/EFI/Linux/
