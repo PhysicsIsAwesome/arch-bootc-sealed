@@ -101,7 +101,7 @@ jobs:
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
           oci: true
-          build-args: base="${{ env.IMAGE_NAME }}-unsealed"
+          build-args: base=${{ env.IMAGE_NAME }}-unsealed:latest
           extra-args: |
             --secret=id=secureboot_key,env=DB_KEY
             --secret=id=secureboot_cert,env=DB_CRT
