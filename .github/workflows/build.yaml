@@ -41,7 +41,7 @@ jobs:
           submodules: true
 
       - name: Bootc Ubuntu Setup
-        uses: bootc-dev/actions/bootc-ubuntu-setup@main
+        uses: actions/bootc-ubuntu-setup.yaml
 
       - name: Get current date
         id: date
