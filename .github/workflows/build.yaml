@@ -41,7 +41,7 @@ jobs:
           submodules: true
 
       - name: Bootc Ubuntu Setup
-        uses: bootc-dev/actions/bootc-ubuntu-setup@main
+        uses: physicsisawesome/actions/bootc-ubuntu-setup@main
 
       - name: Get current date
         id: date
