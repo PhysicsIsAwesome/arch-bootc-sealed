@@ -84,7 +84,7 @@ jobs:
           image: "${{ env.IMAGE_NAME }}-unsealed"
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
-          oci: false
+          oci: true
           extra-args: |
             --secret=id=secureboot_key,env=DB_KEY
             --secret=id=secureboot_cert,env=DB_CRT
@@ -103,7 +103,7 @@ jobs:
           image: ${{ env.IMAGE_NAME }}
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
-          oci: false
+          oci: true
           build-args: base=${{ env.IMAGE_NAME }}-unsealed:latest
           extra-args: |
             --secret=id=secureboot_key,env=DB_KEY
