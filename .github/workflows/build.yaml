@@ -41,7 +41,7 @@ jobs:
           submodules: true
 
       - name: Bootc Ubuntu Setup
-        uses: ./.github/actions/bootc-ubuntu-setup@main
+        uses: ./.github/actions/bootc-ubuntu-setup
 
       - name: Get current date
         id: date
