@@ -1,2 +1,2 @@
 # arch-bootc-sealed
-Experimental building of sealed images based on arch-bootc
+Experimental build of a sealed image based on arch-bootc
