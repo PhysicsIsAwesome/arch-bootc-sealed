@@ -1,3 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: Copyright 2026 bootc
+# This file contains source code from https://github.com/bootc-dev/actions/blob/main/bootc-ubuntu-setup/action.yml
+# Modifications to source code: changed Ubuntu plucky to Ubuntu resolute to get newer packages
+
 name: 'Bootc Ubuntu Setup'
 description: 'Default host setup'
 inputs:
