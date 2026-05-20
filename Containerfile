@@ -23,6 +23,8 @@ RUN --network=none \
             "/${sdboot}"; \
         rm -vf /var/lib/systemd/random-seed'
 
+RUN setfattr --remove=system.posix_acl_default /var/lib/tpm2-tss/system/keystore
+
 RUN rm -rf /boot /var/cache /tmp /var/tmp && \
     mkdir -p /boot /var/cache /tmp /var/tmp
 
