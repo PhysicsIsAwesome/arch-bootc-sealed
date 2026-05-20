@@ -75,6 +75,15 @@ jobs:
           sep-tags: " "
           sep-annotations: " "
 
+      - name: "Get Secure Boot signing key"
+        run: |
+          mkdir -p /tmp/keys
+          printenv SB_KEY > /tmp/keys/key
+          printenv SB_CRT > /tmp/keys/crt
+        env:
+          SB_KEY: ${{ secrets.DB_KEY }}
+          SB_CRT: ${{ secrets.DB_CRT }}
+
       - name: Build unsealed image
         id: build_image_unsealed
         uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2
@@ -86,13 +95,10 @@ jobs:
           labels: ${{ steps.metadata.outputs.labels }}
           oci: true
           extra-args: |
-            --secret=id=secureboot_key,env=DB_KEY
-            --secret=id=secureboot_cert,env=DB_CRT
+            --secret=id=secureboot_key,src=/tmp/keys/key
+            --secret=id=secureboot_cert,src=/tmp/keys/crt
             -v ${{ github.workspace }}:/run/src
             --skip-unused-stages=false
-        env:
-          DB_KEY: ${{ secrets.DB_KEY }}
-          DB_CRT: ${{ secrets.DB_CRT }}
 
       - name: Build sealed image from unsealed
         id: build_image
@@ -106,11 +112,8 @@ jobs:
           oci: true
           build-args: base=${{ env.IMAGE_NAME }}-unsealed:latest
           extra-args: |
-            --secret=id=secureboot_key,env=DB_KEY
-            --secret=id=secureboot_cert,env=DB_CRT
-        env:
-          DB_KEY: ${{ secrets.DB_KEY }}
-          DB_CRT: ${{ secrets.DB_CRT }}
+            --secret=id=secureboot_key,src=/tmp/keys/key
+            --secret=id=secureboot_cert,src=/tmp/keys/crt
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
@@ -131,6 +134,10 @@ jobs:
           tags: ${{ steps.metadata.outputs.tags }}
           username: ${{ env.REGISTRY_USER }}
           password: ${{ env.REGISTRY_PASSWORD }}
+
+      - name: "Cleanup Secure Boot signing key"
+        if: always()
+        run: rm -vrf /tmp/keys
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
