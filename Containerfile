@@ -7,7 +7,7 @@ COPY --chown=root:root --chmod=644 config/firstboot.conf /etc/systemd/system/sys
 RUN mkdir -p /var/roothome
 RUN --mount=type=tmpfs,dst=/tmp --mount=type=cache,dst=/var/tmp --mount=type=cache,dst=/usr/lib/sysimage/cache/pacman \
     pacman -Rsn --noconfirm linux && rm -rf $(find /usr/lib/modules/* -maxdepth 1 -type d | grep -E "arch")
-RUN --mount=type=tmpfs,dst=/tmp --mount=type=tmpfs,dst=/usr/lib/sysimage/cache/pacman pacman -Sy sbsigntools systemd-ukify kmod mokutil linux-hardened podman git --needed --noconfirm
+RUN --mount=type=tmpfs,dst=/tmp --mount=type=tmpfs,dst=/usr/lib/sysimage/cache/pacman pacman -Sy sbsigntools systemd-ukify kmod mokutil linux-hardened podman git base base-devel systemd NetworkManager nano systemd-networkd podman plasma-desktop --needed --noconfirm
 RUN --network=none \
     --mount=type=secret,id=secureboot_key \
     --mount=type=secret,id=secureboot_cert \
