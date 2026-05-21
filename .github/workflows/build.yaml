@@ -114,18 +114,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push To GHCR
-        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2
-        id: push
-        env:
-          REGISTRY_USER: ${{ github.actor }}
+      - name: Push to GHCR with Podman
+        run: |
+          echo "${REGISTRY_PASSWORD}" | podman login ${{ env.IMAGE_REGISTRY }} \
+            --username "${REGISTRY_USER}" \
+            --password-stdin
+          # Push all tags generated earlier
+          for tag in ${{ steps.metadata.outputs.tags }}; do
+            podman push "$tag"
+          done
+        env: 
+          REGISTRY_USER: ${{ github.actor }} 
           REGISTRY_PASSWORD: ${{ github.token }}
-        with:
-          registry: ${{ env.IMAGE_REGISTRY }}
-          image: ${{ env.IMAGE_NAME }}
-          tags: ${{ steps.metadata.outputs.tags }}
-          username: ${{ env.REGISTRY_USER }}
-          password: ${{ env.REGISTRY_PASSWORD }}
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
