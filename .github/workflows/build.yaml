@@ -121,7 +121,7 @@ jobs:
             --password-stdin
           # Push all tags generated earlier
           for tag in ${{ steps.metadata.outputs.tags }}; do
-            podman push "$tag"
+            podman push "${{ env.IMAGE_NAME }}:$tag" "${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:$tag"
           done
         env: 
           REGISTRY_USER: ${{ github.actor }} 
