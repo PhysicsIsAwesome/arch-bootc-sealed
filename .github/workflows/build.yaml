@@ -78,6 +78,15 @@ jobs:
           sep-tags: " "
           sep-annotations: " "
 
+      - name: "Get Secure Boot signing key"
+        run: |
+          mkdir -p /tmp/keys
+          printenv SB_KEY > /tmp/keys/key
+          printenv SB_CRT > /tmp/keys/crt
+        env:
+          SB_KEY: ${{ secrets.DB_KEY }}
+          SB_CRT: ${{ secrets.DB_CRT }}
+
       - name: Build image
         id: build
         run: |
@@ -93,6 +102,10 @@ jobs:
         env:
           DB_KEY: ${{ secrets.DB_KEY }}
           DB_CRT: ${{ secrets.DB_CRT }}
+
+      - name: "Cleanup Secure Boot signing key"
+        if: always()
+        run: rm -vrf /tmp/keys
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
