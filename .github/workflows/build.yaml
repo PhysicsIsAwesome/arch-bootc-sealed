@@ -89,7 +89,7 @@ jobs:
       - name: Seal image
         id: seal
         run: |
-          sudo $(which just) build "${{ env.IMAGE_NAME }}-unsealed" "${{ env.IMAGE_NAME }}"
+          sudo $(which just) seal "${{ env.IMAGE_NAME }}-unsealed" "${{ env.IMAGE_NAME }}"
         env:
           DB_KEY: ${{ secrets.DB_KEY }}
           DB_CRT: ${{ secrets.DB_CRT }}

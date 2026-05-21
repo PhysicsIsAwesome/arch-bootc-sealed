@@ -14,5 +14,5 @@ build image_base image_unsealed:
 seal image_unsealed image_sealed:
     podman build -t {{image_sealed}} --no-cache --build-arg base={{image_unsealed}} --secret=id=secureboot_key,env=DB_KEY --secret=id=secureboot_cert,env=DB_CRT -f Containerfile.uki
 
-push image_local image_remote:
+push image image_remote:
     podman push {{image}} {{image_remote}}
