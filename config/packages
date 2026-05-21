@@ -27,7 +27,6 @@ bash-completion
 dosfstools
 tpm2-tools
 amd-ucode
-fsck
 linux-firmware
 
 # network
