@@ -3,5 +3,4 @@ secureboot-keys
 *.cer
 *.cert
 *.esl
-Justfile
 out.ociarchive
