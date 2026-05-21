@@ -114,7 +114,7 @@ jobs:
             --password-stdin
           # Push all tags generated earlier
           for tag in ${{ steps.metadata.outputs.tags }}; do
-            sudo podman push -digestfile=/tmp/digest "${{ env.IMAGE_NAME }}:${{ env.DEFAULT_TAG }}" "${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:$tag"
+            sudo podman push --digestfile=/tmp/digest "${{ env.IMAGE_NAME }}:${{ env.DEFAULT_TAG }}" "${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:$tag"
           done
         env: 
           REGISTRY_USER: ${{ github.actor }} 

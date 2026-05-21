@@ -5,4 +5,4 @@ ukify_args="\
             --secureboot-private-key /run/secrets/secureboot_key \
             --secureboot-certificate /run/secrets/secureboot_cert \
             --output /boot/${kver}.efi"
-bootc container ukify --rootfs /target --karg "rw rootflags=subvol=@" -- ${ukify_args}
+bootc container ukify --rootfs /target -- ${ukify_args}
