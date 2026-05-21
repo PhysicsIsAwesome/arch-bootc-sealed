@@ -116,12 +116,12 @@ jobs:
 
       - name: Push to GHCR with Podman
         run: |
-          echo "${REGISTRY_PASSWORD}" | podman login ${{ env.IMAGE_REGISTRY }} \
+          echo "${REGISTRY_PASSWORD}" | sudo podman login ${{ env.IMAGE_REGISTRY }} \
             --username "${REGISTRY_USER}" \
             --password-stdin
           # Push all tags generated earlier
           for tag in ${{ steps.metadata.outputs.tags }}; do
-            podman push "${{ env.IMAGE_NAME }}:$tag" "${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:$tag"
+            sudo podman push "${{ env.IMAGE_NAME }}:$tag" "${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:$tag"
           done
         env: 
           REGISTRY_USER: ${{ github.actor }} 
