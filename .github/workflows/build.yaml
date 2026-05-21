@@ -57,10 +57,10 @@ jobs:
         with:
           tags: |
             type=raw,value=${{ env.DEFAULT_TAG }}
-            type=raw,value=${{ env.DEFAULT_TAG }}.{{date 'YYYYMMDD'}}
-            type=raw,value={{date 'YYYYMMDD'}}
-            type=sha,enable=${{ github.event_name == 'pull_request' }}
-            type=ref,event=pr
+            # type=raw,value=${{ env.DEFAULT_TAG }}.{{date 'YYYYMMDD'}}
+            # type=raw,value={{date 'YYYYMMDD'}}
+            # type=sha,enable=${{ github.event_name == 'pull_request' }}
+            # type=ref,event=pr
           labels: |
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/${{ env.REPO_OWNER_LOWERCASE }}/${{ env.IMAGE_NAME }}/${{ github.sha }}/README.md
             org.opencontainers.image.created=${{ steps.date.outputs.date }}
@@ -98,7 +98,7 @@ jobs:
       - name: Seal image
         id: seal
         run: |
-          sudo $(which just) seal "${{ env.IMAGE_NAME }}-unsealed" "${{ env.IMAGE_NAME }}"
+          sudo $(which just) seal "${{ env.IMAGE_NAME }}-unsealed" "${{ env.IMAGE_NAME }}:${{ env.DEFAULT_TAG }}"
         env:
           DB_KEY: ${{ secrets.DB_KEY }}
           DB_CRT: ${{ secrets.DB_CRT }}
