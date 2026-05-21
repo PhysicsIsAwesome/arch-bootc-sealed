@@ -9,7 +9,7 @@ pull image:
     podman pull {{image}}
 
 build image_base image_unsealed:
-    podman build -t {{image_unsealed}} --no-cache --skip-unused-stages=false -v $(pwd):/run/src --build-arg base={{image_base}} --secret=id=secureboot_key,src=/tmp/keys/key --secret=id=secureboot_cert,src=DB_CRT .
+    podman build -t {{image_unsealed}} --no-cache --skip-unused-stages=false -v $(pwd):/run/src --build-arg base={{image_base}} --secret=id=secureboot_key,src=/tmp/keys/key --secret=id=secureboot_cert,src=/tmp/keys/crt .
 
 seal image_unsealed image_sealed:
     podman build -t {{image_sealed}} --no-cache --build-arg base={{image_unsealed}} --secret=id=secureboot_key,src=/tmp/keys/key --secret=id=secureboot_cert,src=/tmp/keys/crt -f Containerfile.uki
