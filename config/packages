@@ -36,7 +36,6 @@ network-manager-applet
 # audio
 pipewire
 pipewire-alsa
-pipewire-jack
 pipewire-pulse
 gst-plugin-pipewire
 libpulse
