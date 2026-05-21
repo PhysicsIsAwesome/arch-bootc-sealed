@@ -137,6 +137,6 @@ jobs:
         run: |
           images=""
           for tag in ${TAGS}; do
-            images+="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${tag}@${DIGEST} "
+            images+="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${tag} "
           done
           cosign sign --yes ${images}
