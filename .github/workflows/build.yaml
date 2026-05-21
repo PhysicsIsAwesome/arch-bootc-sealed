@@ -57,8 +57,8 @@ jobs:
         with:
           tags: |
             type=raw,value=${{ env.DEFAULT_TAG }}
-            # type=raw,value=${{ env.DEFAULT_TAG }}.{{date 'YYYYMMDD'}}
-            # type=raw,value={{date 'YYYYMMDD'}}
+            type=raw,value=${{ env.DEFAULT_TAG }}.{{date 'YYYYMMDD-HHmmss' tz='Europe/Berlin'}}
+            type=raw,value={{date 'YYYYMMDD-HHmmss' tz='Europe/Berlin'}}
             # type=sha,enable=${{ github.event_name == 'pull_request' }}
             # type=ref,event=pr
           labels: |
@@ -69,7 +69,7 @@ jobs:
             org.opencontainers.image.title=${{ env.IMAGE_NAME }}
             org.opencontainers.image.url=https://github.com/${{ env.REPO_OWNER_LOWERCASE }}/${{ env.IMAGE_NAME }}/tree/${{ github.sha }}
             org.opencontainers.image.vendor=${{ env.REPO_OWNER_LOWERCASE }}
-            org.opencontainers.image.version=${{ env.DEFAULT_TAG }}.{{date 'YYYYMMDD'}}
+            org.opencontainers.image.version=${{ env.DEFAULT_TAG }}.{{date 'YYYYMMDD-HHmmss' tz='Europe/Berlin'}}
             io.artifacthub.package.deprecated=false
             io.artifacthub.package.keywords=${{ env.IMAGE_KEYWORDS }}
             io.artifacthub.package.license=Apache-2.0
@@ -107,13 +107,6 @@ jobs:
         if: always()
         run: rm -vrf /tmp/keys
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Push to GHCR with Podman
         run: |
           echo "${REGISTRY_PASSWORD}" | sudo podman login ${{ env.IMAGE_REGISTRY }} \
@@ -121,7 +114,7 @@ jobs:
             --password-stdin
           # Push all tags generated earlier
           for tag in ${{ steps.metadata.outputs.tags }}; do
-            sudo podman push "${{ env.IMAGE_NAME }}:$tag" "${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:$tag"
+            sudo podman push -digestfile=/tmp/digest "${{ env.IMAGE_NAME }}:${{ env.DEFAULT_TAG }}" "${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:$tag"
           done
         env: 
           REGISTRY_USER: ${{ github.actor }} 
@@ -136,7 +129,8 @@ jobs:
           TAGS: ${{ steps.metadata.outputs.tags }}
         run: |
           images=""
+          digest=$(cat /tmp/digest)
           for tag in ${TAGS}; do
-            images+="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${tag} "
+            images+="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${tag}@${digest} "
           done
           cosign sign --yes ${images}
